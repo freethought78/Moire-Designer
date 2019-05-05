@@ -1,0 +1,36 @@
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.js"></script>
+</head>
+<body>
+</body>
+<script>
+var w = 1260;
+var h = 590;
+var x = 0;
+var y = 1;
+var zoom = 3;
+var step = (y+zoom)/zoom;
+
+//var stepchange = 0.01;
+
+function setup() {
+  createCanvas(w, h);
+}
+
+function draw() {
+	while (y < h){
+		x=1;
+		while (x < w){
+			var c = (sin((x/zoom)*(y/zoom)))*100+100;
+			stroke(c)
+			point(x,y);
+			x++;
+		}
+		y++;
+	}
+}
+
+
+</script>
+</html>

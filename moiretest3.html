@@ -1,0 +1,33 @@
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.js"></script>
+</head>
+<body>
+</body>
+<script>
+var w = 1260;
+var h = 590;
+var x = 0;
+var y = 1;
+var zoom = 50;
+
+function setup() {
+  createCanvas(w, h);
+}
+
+function draw() {
+	while (y < h){
+		x=1;
+		while (x < w){
+			var r = (sin((x / zoom) * (y / zoom))) * 100 + 100;
+			var g = (cos((x / zoom) * (y / zoom))) * 100 + 100;
+			var b = (tan((x / zoom) * (y / zoom))) * 100 + 100;
+			stroke(r,g,b)
+			point(x,y);
+			x++;
+		}
+		y++;
+	}
+}
+</script>
+</html>
