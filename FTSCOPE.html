@@ -1,0 +1,167 @@
+<html>
+<body onload="init()">
+<div id="instructions">
+Keys:<br>
+arrows to navigate<br>
++ and - to zoom<br>
+page up/down to skip forward or backward<br>
+home / end to change speed<br>
+insert / delete to change scale
+</div>
+<canvas id="map" width="800" height="600"></canvas><br>
+
+<button onclick="rewind()"> &lt &lt </button>
+<button onclick="stop()"> STOP </button>
+<button onclick="play()"> &gt &gt </button>
+<div id="position"></div>
+<style>
+body{
+  margin:0;
+  padding:0;
+}
+#instructions{
+	float: right;
+	text-align: center;
+	margin: 50;
+}
+</style>
+
+
+
+<script type="text/javascript">
+var zoom = 3;
+var x0 = 477;
+var y0 = 0;
+var start = 120;
+var step = 0.75;
+var scale = 100;
+var playing; 
+
+function rewind(){
+	clearInterval(i);
+	step = Math.abs(step)* -1;
+	init();
+}
+
+function play(){
+	clearInterval(i);
+	step = Math.abs(step)
+	init();
+}
+
+
+function stop(){
+	playing = false;
+	clearInterval(i);
+}
+
+function generateOneFrame(){
+	var canvas = document.getElementById ("map");
+	if (zoom < 1) { zoom = 1; sEl.value = 1; }
+	var wd = canvas.width, wd2 = wd / 2, ht = canvas.height, ht2 = ht / 2;
+	var nx2 = Math.floor (wd2 / zoom), ny2 = Math.floor (ht2 / zoom);
+	var g2 = canvas.getContext ("2d");
+	for (var ix = 0, x = x0 - nx2; ix < wd; ix += zoom, x++){ 
+		for (var iy = 0, y = y0 - ny2; iy < ht; iy += zoom, y++){
+			var u = isCaveOpen (x/scale, y/scale);
+			g2.fillStyle = u;
+			g2.fillRect (ix, iy, zoom, zoom);
+		}
+	}
+}
+
+var shift = start;
+
+function isCaveOpen (x, y){ 
+	var u = shift * Math.sin (x) * Math.cos (y);
+	var H = Math.floor((u - Math.floor (u)) * 360);
+	var L = Math.floor((u - Math.floor (u)) * 50)+25;
+	var S = '100%';
+	var result = `HSL(${H},${S},${L}%)`;
+	return (result);
+}
+var positiondiv = document.getElementById ("position");	
+var key;
+
+var i;
+function init(){
+	playing = true;
+	i = setInterval(()=>{
+		if(shift + step >0.5){
+			shift+=step;
+		} else {
+			shift = 0.5;
+			clearInterval(i);
+		}
+		updateDisplayedParameters();
+		generateOneFrame();
+	}, 10);
+}
+
+
+
+document.onkeydown = function (e) {
+    e = e || window.event;
+	key = e.key;
+	
+	if (key == "ArrowLeft"){
+		x0 --;
+	}
+	if (key == "ArrowDown"){
+		y0 ++;
+	}
+	if (key == "ArrowRight"){
+		x0 ++;
+	}
+	if (key == "ArrowUp"){
+		y0 --;
+	}
+	if (key == "-"){
+		if(zoom - 1 > 0){
+			zoom --;
+		} else zoom = 0;
+	}
+	if (key == "+"){
+		zoom ++;
+	}
+	if (key == "PageUp"){
+		shift ++;
+	}
+	if (key == "PageDown"){
+		if (shift-1 > 0.5){
+			shift  --;
+		} else shift = 0.5;
+	}
+	if (key == "Home"){
+		step = step * 1.1;
+	}
+	if (key == "End"){
+		if(step / 1.1 > 0.000000001){
+			step = step / 1.1;
+		} else step = 0.000000001;
+	}
+	if (key == "Insert"){
+		scale ++;
+	}
+	if (key == "Delete"){
+		if (scale - 1 > 1){
+			scale --;
+		} else scale = 1;
+	}
+	
+	updateDisplayedParameters();
+
+}; 
+
+document.onkeyup = function (e) {
+	if(!playing){
+		generateOneFrame();
+	}
+}
+
+function updateDisplayedParameters(){
+	positiondiv.innerHTML = `shift: ${shift}, x: ${x0}, y: ${y0}, zoom: ${zoom}, scale: ${scale}, step: ${step}`;
+}
+</script>
+</body>
+</html>
